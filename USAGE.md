@@ -23,17 +23,23 @@ npm install
       "args": ["/Users/unie/Desktop/Project/zentao-mcp/src/index.js"],
       "env": {
         "ZENTAO_URL": "https://your-zentao-url.com",
-        "ZENTAO_ACCOUNT": "your-username",
-        "ZENTAO_PASSWORD": "your-password"
+        "ZENTAO_TOKEN": "your-token",
+        "ZENTAO_SID": "your-zentaosid"
       }
     }
   }
 }
 ```
 
+**如何获取 token 和 zentaosid：**
+1. 登录禅道系统
+2. 打开浏览器开发者工具（F12）
+3. 在 Network 标签中查看请求的 Cookie
+4. 复制 `token` 和 `zentaosid` 的值
+
 #### 方法二：动态配置（推荐）
 
-如果不想在配置文件中硬编码密码，可以只配置命令，然后通过工具动态配置：
+如果不想在配置文件中硬编码 token 和 zentaosid，可以只配置命令，然后通过工具动态配置：
 
 ```json
 {
@@ -61,9 +67,17 @@ npm install
 **对话示例：**
 
 ```
-你：请帮我配置禅道连接，URL 是 https://zentao.example.com，账号是 admin，密码是 password123
+你：请帮我配置禅道连接，URL 是 https://zentao.example.com，token 是 bearer xxx，zentaosid 是 712bc0a88bfff38a0a7310240521b40f
 
 AI：我会使用 configure 工具来配置禅道连接信息...
+```
+
+**或者提供完整的 Cookie：**
+
+```
+你：请帮我配置禅道连接，URL 是 https://zentao.example.com，Cookie 是 "zentaosid=712bc0a88bfff38a0a7310240521b40f; token=bearer eyJhbGciOiJSUzI1NiJ9..."
+
+AI：我会从 Cookie 中提取 token 和 zentaosid 并配置...
 ```
 
 ### 示例 2：获取产品需求列表
@@ -74,6 +88,16 @@ AI：我会使用 configure 工具来配置禅道连接信息...
 你：请获取产品ID为1的所有需求
 
 AI：我会使用 get_requirements 工具获取产品需求...
+```
+
+### 示例 2.1：获取单个需求详情
+
+**对话示例：**
+
+```
+你：获取需求10818的详情
+
+AI：我会使用 get_requirement 工具获取需求详情...
 ```
 
 ### 示例 3：获取 Bug 列表
@@ -101,12 +125,15 @@ AI：我会使用 get_tasks 工具获取项目任务...
 ### configure
 配置禅道连接信息
 - **参数：**
-  - `url` (string, 必需): 禅道服务器地址
-  - `account` (string, 必需): 账号
-  - `password` (string, 必需): 密码
+  - `url` (string, 必需): 禅道服务器地址（例如：https://your-zentao-url.com）
+  - `token` (string, 必需): 禅道 token（用于 Cookie 认证）
+  - `zentaosid` (string, 必需): zentaosid（用于 Cookie 认证）
 
-### get_token
-获取认证 token（通常不需要手动调用，其他工具会自动获取）
+**如何获取 token 和 zentaosid：**
+1. 登录禅道系统
+2. 打开浏览器开发者工具（F12）
+3. 在 Network 标签中查看任意请求的 Cookie
+4. 复制 `token` 和 `zentaosid` 的值
 
 ### get_requirements
 获取产品需求列表
@@ -114,6 +141,11 @@ AI：我会使用 get_tasks 工具获取项目任务...
   - `productId` (number, 必需): 产品ID
   - `page` (number, 可选): 页码，默认1
   - `limit` (number, 可选): 每页数量，默认20
+
+### get_requirement
+获取单个需求详情
+- **参数：**
+  - `storyId` (number, 必需): 需求ID
 
 ### get_bugs
 获取产品 bug 列表
@@ -149,7 +181,7 @@ A: Cursor 的 MCP 配置通常在以下位置：
 
 ### Q: Token 过期了怎么办？
 
-A: Token 会自动缓存1小时，过期后会自动重新获取，无需手动处理。
+A: Token 和 zentaosid 会过期，如果遇到认证失败，需要重新从浏览器 Cookie 中获取最新的 token 和 zentaosid，然后使用 `configure` 工具重新配置。
 
 ### Q: 如何测试 MCP 服务器是否正常工作？
 

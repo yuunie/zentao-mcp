@@ -1,0 +1,22 @@
+{
+  "name": "zentao-mcp",
+  "version": "1.0.0",
+  "description": "禅道 MCP 服务器 - 通过账号密码获取token并查询需求、bug、任务等内容",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "zentao",
+    "api",
+    "project-management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  }
+}
+

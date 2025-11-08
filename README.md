@@ -1,10 +1,10 @@
 # 禅道 MCP 服务器
 
-这是一个基于禅道 RESTful API v1 的 MCP (Model Context Protocol) 服务器，通过 token 和 zentaosid 进行 Cookie 认证，可以查询禅道中的需求、bug、任务等内容。
+这是一个基于禅道 RESTful API v1 的 MCP (Model Context Protocol) 服务器，通过 zentaosid 进行 Cookie 认证，可以查询禅道中的需求、bug、任务等内容。
 
 ## 功能特性
 
-- 🔐 使用 token 和 zentaosid 进行 Cookie 认证
+- 🔐 使用 zentaosid 进行 Cookie 认证
 - 📋 获取产品需求列表
 - 📄 获取单个需求详情
 - 🐛 获取产品 bug 列表
@@ -46,7 +46,6 @@ npm install
 
 ```bash
 export ZENTAO_URL=https://your-zentao-url.com
-export ZENTAO_TOKEN=your-token
 export ZENTAO_SID=your-zentaosid
 ```
 
@@ -58,19 +57,18 @@ export ZENTAO_SID=your-zentaosid
 
 ### 1. 配置禅道连接信息
 
-使用 `configure` 工具设置禅道 URL、token 和 zentaosid：
+使用 `configure` 工具设置禅道 URL 和 zentaosid：
 
-**如何获取 token 和 zentaosid：**
+**如何获取 zentaosid：**
 1. 登录禅道系统
 2. 打开浏览器开发者工具（F12）
 3. 在 Network 标签中查看请求的 Cookie
-4. 复制 `token` 和 `zentaosid` 的值
+4. 复制 `zentaosid` 的值
 
 **配置示例：**
 ```json
 {
   "url": "https://your-zentao-url.com",
-  "token": "bearer eyJhbGciOiJSUzI1NiJ9...",
   "zentaosid": "712bc0a88bfff38a0a7310240521b40f"
 }
 ```
@@ -123,7 +121,6 @@ export ZENTAO_SID=your-zentaosid
       "args": ["/absolute/path/to/zentao-mcp/src/index.js"],
       "env": {
         "ZENTAO_URL": "https://your-zentao-url.com",
-        "ZENTAO_TOKEN": "your-token",
         "ZENTAO_SID": "your-zentaosid"
       }
     }
@@ -131,7 +128,7 @@ export ZENTAO_SID=your-zentaosid
 }
 ```
 
-**注意：** 推荐使用动态配置方式，不在配置文件中硬编码 token 和 zentaosid，而是通过 `configure` 工具动态设置。
+**注意：** 推荐使用动态配置方式，不在配置文件中硬编码 zentaosid，而是通过 `configure` 工具动态设置。
 
 ## API 文档
 
@@ -140,7 +137,7 @@ export ZENTAO_SID=your-zentaosid
 ## 技术实现
 
 - 使用 `@modelcontextprotocol/sdk` 实现 MCP 协议
-- 通过 Cookie 认证（token + zentaosid）访问禅道 API
+- 通过 Cookie 认证（zentaosid）访问禅道 API
 - 支持分页查询（page 和 limit 参数）
 - 完整的错误处理机制
 

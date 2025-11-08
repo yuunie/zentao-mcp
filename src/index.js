@@ -10,16 +10,15 @@ import {
 // 配置存储
 let config = {
   url: process.env.ZENTAO_URL || "",
-  token: process.env.ZENTAO_TOKEN || "", // 用户配置的 token
   zentaosid: process.env.ZENTAO_SID || "", // zentaosid
 };
 
 /**
- * 发送带 token 的 API 请求（使用 Cookie）
+ * 发送 API 请求（使用 Cookie）
  */
 async function apiRequest(endpoint, method = "GET", body = null) {
-  if (!config.token || !config.zentaosid) {
-    throw new Error("请先配置 token 和 zentaosid");
+  if (!config.zentaosid) {
+    throw new Error("请先配置 zentaosid");
   }
   
   // 确保 URL 末尾没有斜杠，然后拼接路径
@@ -30,7 +29,7 @@ async function apiRequest(endpoint, method = "GET", body = null) {
     method,
     headers: {
       "Content-Type": "application/json",
-      Cookie: `zentaosid=${config.zentaosid}; token=${config.token}`, // Cookie 中使用正确的 zentaosid 和 token
+      Cookie: `zentaosid=${config.zentaosid}`, // Cookie 中使用 zentaosid
     },
   };
 
@@ -71,7 +70,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "configure",
-        description: "配置禅道连接信息（URL、token、zentaosid）",
+        description: "配置禅道连接信息（URL、zentaosid）",
         inputSchema: {
           type: "object",
           properties: {
@@ -79,16 +78,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "string",
               description: "禅道服务器地址（例如：https://your-zentao-url.com）",
             },
-            token: {
-              type: "string",
-              description: "禅道 token（用于 Cookie 认证）",
-            },
             zentaosid: {
               type: "string",
               description: "zentaosid（用于 Cookie 认证）",
             },
           },
-          required: ["url", "token", "zentaosid"],
+          required: ["url", "zentaosid"],
         },
       },
       {
@@ -199,6 +194,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["storyId"],
         },
       },
+      {
+        name: "get_bug",
+        description: "获取单个 bug 详情",
+        inputSchema: {
+          type: "object",
+          properties: {
+            bugId: {
+              type: "number",
+              description: "Bug ID",
+            },
+          },
+          required: ["bugId"],
+        },
+      },
     ],
   };
 });
@@ -212,7 +221,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "configure": {
         config = {
           url: args.url,
-          token: args.token,
           zentaosid: args.zentaosid,
         };
         return {
@@ -221,7 +229,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               type: "text",
               text: `禅道配置已更新：
 - URL: ${config.url}
-- Token: ${config.token ? "已配置" : "未配置"}
 - Zentaosid: ${config.zentaosid ? "已配置" : "未配置"}`,
             },
           ],
@@ -302,6 +309,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "get_requirement": {
         const { storyId } = args;
         const result = await apiRequest(`/stories/${storyId}`);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "get_bug": {
+        const { bugId } = args;
+        const result = await apiRequest(`/bugs/${bugId}`);
         return {
           content: [
             {
